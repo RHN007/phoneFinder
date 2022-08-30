@@ -38,7 +38,7 @@ const displayPhones = (phones, dataLimit) => {
           <h5 class="card-title">Name:  ${phone_name}</h5>
           <p class="card-text">Brand: ${brand}</p>
           <p class="card-text">${slug}</p>
-          <button onclick=loadPhoneDetails('${slug}') class="btn btn-primary">Show Details</button>
+          <button onclick=loadPhoneDetails('${slug}') class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#phoneDetailsModal" >Show Details</button>
         </div>
       </div>
         `
@@ -93,6 +93,24 @@ const loadPhoneDetails =async (id) => {
     const url = `https://openapi.programming-hero.com/api/phone/${id}`; 
     const res = await fetch(url); 
     const data = await res.json(); 
-    console.log(data.data)
+    displayPhoneDetails(data.data)
 }
-// loadPhones()
+
+//Modal BOdy : 
+const displayPhoneDetails = phone => {
+    console.log(phone)
+
+    const modalTitle = document.getElementById('phoneDetailsModalLabel'); 
+    modalTitle.innerText = phone.name; 
+    const phoneDetails = document.getElementById('modalBody'); 
+    phoneDetails.innerHTML = `
+        <p>${phone.releaseDate ? phone.releaseDate: "NO RELEASE DATE FOUND"} </p>
+        <p>Storage : ${phone.mainFeatures.storage}  </p>
+        <p>Display: ${phone.mainFeatures.displaySize}  </p>
+        <p>Others: ${phone.others ? phone.others.WLAN : "no Info Found " }  </p>
+        
+    `
+}
+
+
+loadPhones('iphone'); 
