@@ -10,9 +10,7 @@ const displayPhones = phones => {
     const phoneContainer = document.getElementById('phone-container'); 
     phoneContainer.innerHTML = ''
 
-    //Display only 20 
-
-
+    //Display only 10
     phones = phones.slice(0,10)
     //Display No Phone Found: 
 
@@ -40,15 +38,26 @@ const displayPhones = phones => {
         `
         phoneContainer.appendChild(phoneDiv)
     })
-
+    //stop Spinier Loader 
+        toggleSpinner(false)
 }
-
+//Handle Search Button Clicked 
 document.getElementById('btn-search').addEventListener('click', function(){
+    //start loader
+    toggleSpinner(true)
     const searchFieldText = document.getElementById('search-field')
     const searchValue = searchFieldText.value; 
     loadPhones(searchValue); 
     searchFieldText.value = ''; 
 })
 
-
+const toggleSpinner = isLoading => {
+    const loaderSection = document.getElementById('loader'); 
+    if(isLoading){
+        loaderSection.classList.remove('d-none'); 
+    }
+    else {
+        loaderSection.classList.add('d-none')
+    }
+}
 // loadPhones()
