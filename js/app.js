@@ -1,31 +1,36 @@
-const loadPhones = async (searchText) =>{
+const loadPhones = async (searchText, dataLimit) => {
     const url = `https://openapi.programming-hero.com/api/phones?search=${searchText}`
     const res = await fetch(url)
-    const data = await res.json(); 
-   displayPhones(data.data)
+    const data = await res.json();
+    displayPhones(data.data, dataLimit)
 }
 
 
-const displayPhones = phones => {
-    const phoneContainer = document.getElementById('phone-container'); 
+const displayPhones = (phones, dataLimit) => {
+    const phoneContainer = document.getElementById('phone-container');
     phoneContainer.innerHTML = ''
-
     //Display only 10
-    phones = phones.slice(0,10)
+    const showAll = document.getElementById('show-all');
+    if (dataLimit && phones.length > 10) {
+        phones = phones.slice(0, 10);
+        showAll.classList.remove('d-none');
+    }
+    else {
+        showAll.classList.add('d-none');
+    }
     //Display No Phone Found: 
-
-    const noPhone = document.getElementById('no-phone-message'); 
-    if(phones.length === 0){
-        noPhone.classList.remove('d-none'); 
+    const noPhone = document.getElementById('no-phone-message');
+    if (phones.length === 0) {
+        noPhone.classList.remove('d-none');
     }
     else {
         noPhone.classList.add('d-none')
     }
     //Display All Phone 
-    phones.forEach(phone=> {
-        const {brand, phone_name , slug, image} = phone;
-        const phoneDiv = document.createElement('div'); 
-        phoneDiv.classList.add('col'); 
+    phones.forEach(phone => {
+        const { brand, phone_name, slug, image } = phone;
+        const phoneDiv = document.createElement('div');
+        phoneDiv.classList.add('col');
         phoneDiv.innerHTML = `
         <div class="card p-5">
         <img src=${image} class="card-img-top " alt="...">
@@ -33,31 +38,61 @@ const displayPhones = phones => {
           <h5 class="card-title">Name:  ${phone_name}</h5>
           <p class="card-text">Brand: ${brand}</p>
           <p class="card-text">${slug}</p>
+          <button onclick=loadPhoneDetails('${slug}') class="btn btn-primary">Show Details</button>
         </div>
       </div>
         `
         phoneContainer.appendChild(phoneDiv)
     })
     //stop Spinier Loader 
-        toggleSpinner(false)
+    toggleSpinner(false)
 }
-//Handle Search Button Clicked 
-document.getElementById('btn-search').addEventListener('click', function(){
-    //start loader
+/**Common Function  */
+const processSearch = (dataLimit) => {
     toggleSpinner(true)
     const searchFieldText = document.getElementById('search-field')
-    const searchValue = searchFieldText.value; 
-    loadPhones(searchValue); 
-    searchFieldText.value = ''; 
+    const searchText = searchFieldText.value;
+    loadPhones(searchText, dataLimit);
+    console.log(dataLimit)
+    searchFieldText.value = '';
+}
+
+
+//Handle Search Button Clicked 
+document.getElementById('btn-search').addEventListener('click', function () {
+    //start loader
+    processSearch(10)
 })
+//Using enter to search 
+document.getElementById('search-field').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      // code for enter
+      processSearch(10)
+    }
+});
+
+
 
 const toggleSpinner = isLoading => {
-    const loaderSection = document.getElementById('loader'); 
-    if(isLoading){
-        loaderSection.classList.remove('d-none'); 
+    const loaderSection = document.getElementById('loader');
+    if (isLoading) {
+        loaderSection.classList.remove('d-none');
     }
     else {
         loaderSection.classList.add('d-none')
     }
+}
+
+/**NOT THE BEST WAY TO SHOW ALL  */
+document.getElementById('button-showAll').addEventListener('click', function () {
+    processSearch();
+    console.log(processSearch())
+})
+
+const loadPhoneDetails =async (id) => {
+    const url = `https://openapi.programming-hero.com/api/phone/${id}`; 
+    const res = await fetch(url); 
+    const data = await res.json(); 
+    console.log(data.data)
 }
 // loadPhones()
